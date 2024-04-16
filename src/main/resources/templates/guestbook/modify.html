@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+
+    <th:block th:fragment="content">
+
+        <h1 class="mt-4">GuestBook Modify Page</h1>
+    </th:block>
+
+    <form action="/guestbook/modify" method="post"> <!--추가된 form 태그-->
+
+        <!--수정 시 수정해야 하는 내용들이 전달되어야 함-->
+        <!--수정된 후 목록 페이지로 이동하거나 조회 페이지로 이동해야 하는데 이때 기존의 페이지 번호를 유지하는 게 좋음-->
+        <!--페이지 번호-->
+        <input type="hidden" name="page" th:value="${requestDTO.page}">
+        <!--제목 or 내용-->
+        <input type="hidden" name="type" th:value="${requestDTO.type}">
+        <!--키워드-->
+        <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
+
+        <!--글 번호-->
+        <div class="form-group">
+            <label>Gno</label>
+            <input type="text" class="form-control" name="gno" th:value="${dto.gno}" readonly> <!--수정 불가-->
+        </div>
+
+        <!--글 제목-->
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" name="title" th:value="${dto.title}"> <!--수정 가능-->
+        </div>
+
+        <!--글 내용-->
+        <div class="form-group">
+            <label>Content</label>
+            <textarea class="form-control" rows="5" name="content">[[${dto.content}]]</textarea><!--수정 가능-->
+        </div>
+
+        <!--글 작성자-->
+        <div class="form-group">
+            <label>Writer</label>
+            <input type="text" class="form-control" name="writer" th:value="${dto.writer}" readonly> <!--수정 불가-->
+        </div>
+
+        <!--글 작성일-->
+        <div class="form-group">
+            <label>RegDate</label>
+            <input type="text" class="form-control" name="gno" th:value="${#temporals.format(dto.regDate, 'yyyy/MM/dd HH:mm:ss')}" readonly> <!--수정 불가-->
+        </div>
+
+        <!--글 수정일-->
+        <div class="form-group">
+            <label>ModDate</label>
+            <input type="text" class="form-control" name="gno" th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}" readonly> <!--수정 불가-->
+        </div>
+    </form>
+
+    <button type="button" class="btn btn-primary modifyBtn">Modify</button>
+
+    <button type="button" class="btn btn-info listBtn">List</button>
+
+    <button type="button" class="btn btn-danger removeBtn">Remove</button>
+
+</th:block>
+
+<script th:inline="javascript">
+
+    var actionForm = $("form"); // form 태그 객체
+
+    // 삭제 버튼 클릭
+    $(".removeBtn").click(function () {
+        actionForm.attr("action", "/guestbook/remove").attr("method", "post");
+
+        actionForm.submit();
+    });
+
+    // 수정 버튼 클릭
+    $(".modifyBtn").click(function() {
+        if(!confirm("수정하시겠습니까?")){
+            return;
+        }
+
+        actionForm.attr("action", "/guestbook/modify").attr("method", "post").submit();
+    });
+
+    // 목록 버튼 클릭
+    $(".listBtn").click(function (){
+
+        //var pageInfo = $("input[name='page']"); // 이름이 page인 input 타입에 들어온 값을 변수에 넣음
+        var page = $("input[name='page']");
+        var type = $("input[name='type']");
+        var keyword = $("input[name='keyword']");
+
+        actionForm.empty(); // form 태그의 모든 내용 지우고
+
+        actionForm.append(page);
+        actionForm.append(type);
+        actionForm.append(keyword);
+
+        //actionForm.append(pageInfo); // 목록 페이지 이동에 필요한 내용 다시 추가
+        actionForm.attr("action", "/guestbook/list").attr("method", "get");
+
+        //console.log(actionForm.html()); // 먼저 확인 후 주석 처리
+        actionForm.submit(); // 확인 후 주석 해제
+    })
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

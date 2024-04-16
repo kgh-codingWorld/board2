@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- xmlns:th : Thymeleaf의 네임스페이스를 정의, 이 네임스페이스를 사용하여 Thymeleaf의 속성을 HTML 요소에 추가할 수 있음-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--th:replace 속성은 지정된 템플릿 파일의 내용으로 현재 요소를 대체-->
+<!--~{/layout/basic :: setContent(~{this::content})}는 대체할 템플릿 파일의 경로를 지정-->
+<!--this::content 부분을 현재 요소의 위치로 대체-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+
+    <!--다른 템플릿 파일에서 이 content fragment(조각)를 사용하여 해당 위치에 일부 HTML 코드를 삽입할 수 있음-->
+    <th:block th:fragment="content">
+
+        <h1 class="mt-4">GuestBook List Page
+            <span>
+                <!--Thymeleaf의 URL 표현식-->
+                <a th:href="@{/guestbook/register}">
+                    <button type="button" class="btn btn-outline-primary">REGISTER
+                    </button>
+                </a>
+            </span>
+        </h1>
+
+        <!--/guestbook/list 경로로 get 메서드를 통해 데이터 전송-->
+        <form action="/guestbook/list" method="get" id="searchForm">
+            <div class="input-group">
+                <!--페이지 번호 value를 1로 지정함으로 1페이지로 무조건 가도록 함-->
+                <input type="hidden" name="page" value = "1">
+                <div class="input-group-prepend">
+                    <!--<select> 요소를 사용하여 사용자에게 선택할 수 있는 옵션 목록을 제공-->
+                    <!--각 옵션은 검색 유형을 나타냄-->
+                    <!--name="type"은 이 <select> 요소의 이름을 정의함, 이 이름으로 사용자가 선택한 값이 서버로 전송-->
+                    <select class="custom-select" name="type">
+                        <!--th:selected="${pageRequestDTO.type == null}": 첫 번째 옵션에 대한 조건-->
+                        <!--${pageRequestDTO.type == null}은 pageRequestDTO 객체의 type 속성이 null인지 확인-->
+                        <!--만약 null이라면 이 옵션이 선택되어야 함-->
+                        <option th:selected="${pageRequestDTO.type == null}">-------</option>
+                        <!--value="t": 각 옵션의 값을 정의-->
+                        <!--이 값은 해당 옵션이 선택될 때 서버로 전송-->
+                        <!--th:selected="${pageRequestDTO.type =='t'}": 각 옵션에 대한 조건-->
+                        <!--${pageRequestDTO.type =='t'}는 pageRequestDTO 객체의 type 속성이 "t"인지 확인-->
+                        <!--t"라면 이 옵션이 선택되어야 함-->
+                        <option value="t" th:selected="${pageRequestDTO.type =='t'}" >제목</option>
+                        <option value="t" th:selected="${pageRequestDTO.type =='c'}"  >내용</option>
+                        <option value="t"  th:selected="${pageRequestDTO.type =='w'}" >작성자</option>
+                        <option value="tc"  th:selected="${pageRequestDTO.type =='tc'}" >제목 + 내용</option>
+                        <option value="tcw"  th:selected="${pageRequestDTO.type =='tcw'}" >제목 + 내용 + 작성자</option>
+                    </select>
+                </div>
+                <input class="form-control" name="keyword" th:value="${pageRequestDTO.keyword}">
+                <div class="input-group-append" id="button-addon4">
+                    <button class="btn btn-outline-secondary btn-search" type="button">Search</button>
+                    <button class="btn btn-outline-secondary btn-clear" type="button">Clear</button>
+                </div>
+            </div>
+        </form>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Writer</th>
+                <th scope="col">Regdate</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="dto : ${result.dtoList}" > <!--service.getList(pageRequestDTO)의 dtoList-->
+                <th scope="row">
+                    <!--gno: 키, ${dto.gno}: 값-->
+                    <a th:href="@{/guestbook/read(gno = ${dto.gno},
+                    page= ${result.page},
+                    type=${pageRequestDTO.type} ,
+                    keyword = ${pageRequestDTO.keyword})}">
+                        [[${dto.gno}]]
+                    </a>
+                </th>
+                <td>[[${dto.title}]]</td>
+                <td>[[${dto.writer}]]</td>
+                <td>[[${#temporals.format(dto.regDate, 'yyyy/MM/dd')}]]</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!--페이지 번호의 검색 조건 추가-->
+        <ul class="pagination h-100 justify-content-center align-items-center">
+
+            <li class="page-item " th:if="${result.prev}">
+                <a class="page-link" th:href="@{/guestbook/list(page= ${result.start -1},
+                    type=${pageRequestDTO.type} ,
+                    keyword = ${pageRequestDTO.keyword} ) }" tabindex="-1">Previous</a>
+            </li> <!--목록 페이지 하단의 검색은 page 값만 처리하므로 검색 타입과 키워드를 추가해야 함-->
+
+            <!--현재 페이지 여부를 체크해서 active라는 이름의 클래스가 출력되도록 작성-->
+            <li th:class=" 'page-item ' + ${result.page == page?'active':''} " th:each="page: ${result.pageList}">
+                <a class="page-link" th:href="@{/guestbook/list(page = ${page} ,
+                   type=${pageRequestDTO.type} ,
+                   keyword = ${pageRequestDTO.keyword}  )}">
+                    [[${page}]]
+                </a>
+            </li>
+
+            <li class="page-item" th:if="${result.next}">
+                <a class="page-link" th:href="@{/guestbook/list(page= ${result.end + 1} ,
+                    type=${pageRequestDTO.type} ,
+                    keyword = ${pageRequestDTO.keyword} )}">Next</a>
+            </li>
+
+        </ul>
+
+        <!--모달창-->
+        <div class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Modal body text goes here.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+
+            var msg = [[${msg}]];
+
+            console.log(msg);
+
+            if(msg){
+                $(".modal").modal();
+            }
+            var searchForm = $("#searchForm");
+
+            $('.btn-search').click(function(e){
+
+                searchForm.submit();
+
+            });
+
+            $('.btn-clear').click(function(e){
+
+                searchForm.empty().submit();
+
+            });
+
+        </script>
+
+    </th:block>
+
+</th:block>
