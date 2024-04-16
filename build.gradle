@@ -72,6 +72,9 @@ dependencies {
 //    compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.12'
     implementation 'net.coobird:thumbnailator:0.4.16'
 
+    // 시큐리티
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
 
 
 
