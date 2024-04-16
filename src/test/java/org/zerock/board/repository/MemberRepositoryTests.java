@@ -15,7 +15,7 @@ public class MemberRepositoryTests {
     private MemberRepository memberRepository;
 
     @Test
-    public void insertMembers() {
+    public void insertMembers() { // 깃 허브
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
 
