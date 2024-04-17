@@ -42,6 +42,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
     // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client 마리아 db 연결용
     implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.3.3'
 
@@ -67,6 +71,7 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     // https://mvnrepository.com/artifact/net.coobird/thumbnailator 섬네일 처리
 //    compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.12'
@@ -74,12 +79,14 @@ dependencies {
 
     // 시큐리티
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
+    implementation 'com.google.code.gson:gson:2.8.9'
 
-
-
-
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 }
 
@@ -107,9 +114,7 @@ sourceSets {
 
 }
 
-
-compileJava.dependsOn('clean') // 톰켓 10용
-// 톰켓 9용
+compileJava.dependsOn('clean') // 톰켓 10용-098321`.0
 //configurations {
 //    querydsl.extendsFrom compileClasspath
 //}

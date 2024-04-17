@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:layout="http://www.w3.org/1999/xhtml"
+                xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+                layout:decorate="~{layout/basic.html">
 
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
 
@@ -18,15 +21,20 @@
         <textarea class="form-control" rows="5" name="content"></textarea>
       </div>
 
-      <div class="form-group">
-        <label>Writer Email</label>
-        <input type="email" class="form-control" name="writerEmail" placeholder="Writer Email">
+      <div class="input-group mb-3">
+        <span class="input-group-text">Writer</span>
+        <input type="text" class="form-control" name="writer" placeholder="Writer"
+                th:value="${#authentication.principal.username}" readonly>
       </div>
 
      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </th:block>
-
+  <script layout:fragment="script" th:inline="javascript">
+    const auth = [[${#authentication}]]
+    const errors = [[${errors}]]
+    console.log(errors)
+  </script>
 </th:block>
 <head>
     <meta charset="UTF-8">

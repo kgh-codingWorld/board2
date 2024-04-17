@@ -16,7 +16,7 @@ public interface BoardService {
 
     PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO pageRequestDTO); // 목록 처리
 
-    BoardDTO get(Long bno); // 게시물 조회
+    BoardDTO readOne(Long bno); // 게시물 조회
 
     void removeWithReplies(Long bno); // 게시물 삭제
 
@@ -42,7 +42,7 @@ public interface BoardService {
                 .regDate(board.getRegDate())
                 .modDate(board.getModDate())
                 .writerEmail(member.getEmail())
-                .writerName(member.getName())
+                .writerName(member.getMid())
                 .replyCount(replyCount.intValue()) // long으로 나오기 때문에 int로 처리하도록 함
                 .build();
         return boardDTO;

@@ -77,7 +77,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 상세보기
     @Override
-    public BoardDTO get(Long bno) {
+    public BoardDTO readOne(Long bno) {
 
         Object result = repository.getBoardByBno(bno); // 게시물 번호로 게시물 한 개 가져옴
 
