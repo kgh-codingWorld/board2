@@ -3,12 +3,17 @@ package org.zerock.board.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class PageRequestDTO { // 페이지 요청 처리
     // 목록 페이지를 요청할 때 사용하는 데이터를 재사용하기 쉽게 만드는 클래스
@@ -16,20 +21,50 @@ public class PageRequestDTO { // 페이지 요청 처리
     // page와 size 파라미터를 수집하는 역할
     // **JPA 쪽에서 사용하는 Pageable 타입의 객체를 생성하는 것이 진짜 목적**
 
-    private int page; // 화면에서 전달됨
-    private int size; // 화면에서 전달됨
-    private String type; // 서버 사이드 처리
-    private String keyword; // 서버 사이드 처리
+    @Builder.Default
+    private int page = 1;
 
-    public PageRequestDTO() { // jpa 쪽에서 사용하는 Pageable 타입의 객체를 생성하는데 쓰임
+    @Builder.Default
+    private int size = 10;
 
-        this.page = 1; // 기본값
-        this.size = 10;
+    private String type;
+
+    private String keyword;
+
+    public String[] getTypes() {
+        if(type == null || type.isEmpty()) {
+            return null;
+        }
+        return type.split("");
     }
 
-    public Pageable getPageable(Sort sort){
+    public Pageable getPageable(String...props) {
+        return PageRequest.of(this.page -1, this.size, Sort.by(props).descending());
+    }
 
-        // 1페이지의 경우 0이 될 수 있도록 -1로 작성함
-        return PageRequest.of(page - 1, size, sort);
+    private String link;
+
+    public String getLink() {
+        if(link == null) {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append("page=" + this.page);
+
+            builder.append("&size=" + this.size);
+
+            if(type != null && type.length() > 0) {
+                builder.append("&type=" + type);
+            }
+
+            if(keyword != null) {
+                try {
+                    builder.append("&keyword=" + URLEncoder.encode(keyword,"UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+
+                }
+            }
+            link = builder().link;
+        }
+        return link;
     }
 }

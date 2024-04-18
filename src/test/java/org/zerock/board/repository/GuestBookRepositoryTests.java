@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.zerock.board.dto.GuestBookDTO;
 import org.zerock.board.dto.PageRequestDTO;
-import org.zerock.board.dto.PageResultDTO;
+import org.zerock.board.dto.PageResponseDTO;
 import org.zerock.board.entity.GuestBook;
 import org.zerock.board.entity.QGuestBook;
 import org.zerock.board.service.GuestBookService;
@@ -101,7 +101,7 @@ public class GuestBookRepositoryTests {
                 .keyword("한글") // 검색 키워드
                 .build();
 
-        PageResultDTO<GuestBookDTO, GuestBook> resultDTO = service.getList(pageRequestDTO);
+        PageResponseDTO<GuestBookDTO, GuestBook> resultDTO = service.getList(pageRequestDTO);
 
         System.out.println("PREV: " + resultDTO.isPrev());
         System.out.println("NEXT: " + resultDTO.isNext());

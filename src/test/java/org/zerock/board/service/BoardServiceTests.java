@@ -1,13 +1,15 @@
 package org.zerock.board.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zerock.board.dto.BoardDTO;
 import org.zerock.board.dto.PageRequestDTO;
-import org.zerock.board.dto.PageResultDTO;
+import org.zerock.board.dto.PageResponseDTO;
 
 @SpringBootTest
+@Log4j2
 public class BoardServiceTests {
 
     @Autowired
@@ -16,53 +18,41 @@ public class BoardServiceTests {
     @Test
     public void testRegister() {
 
-        BoardDTO dto = BoardDTO.builder()
+        log.info(boardService.getClass().getName());
+
+        BoardDTO boardDTO = BoardDTO.builder()
                 .title("Test...")
                 .content("Test...")
-                .writerEmail("user55@aaa.com") // 현재 데이터베이스에 존재하는 회원 이메일
+                .writer("user55@aaa.com") // 현재 데이터베이스에 존재하는 회원 이메일
                 .build();
-        Long bno = boardService.register(dto);
+        Long bno = boardService.register(boardDTO);
+
+        log.info("bno: " + bno);
+    }
+
+    @Test
+    public void testModify() {
+
+        BoardDTO boardDTO = BoardDTO.builder()
+                .bno(101L)
+                .title("Updated...101")
+                .content("Updated content 101...")
+                .build();
+
+        boardService.modify(boardDTO);
     }
 
     @Test
     public void testList() {
-
-        PageRequestDTO pageRequestDTO = new PageRequestDTO();
-
-        PageResultDTO<BoardDTO, Object[]> result = boardService.getList(pageRequestDTO);
-
-        for (BoardDTO boardDTO : result.getDtoList()) {
-            System.out.println(boardDTO);
-        }
-    }
-
-    @Test
-    public void testGet() {
-
-        Long bno = 100L;
-
-        BoardDTO boardDTO = boardService.get(bno);
-
-        System.out.println(boardDTO);
-    }
-
-    @Test
-    public void testRemove() {
-
-        Long bno = 1L;
-
-        boardService.removeWithReplies(bno);
-    }
-
-    @Test
-    public void testModify(){
-
-        BoardDTO boardDTO = BoardDTO.builder()
-                .bno(2L)
-                .title("제목 변경합니다.")
-                .content("내용 변경합니다.")
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .type("tcw")
+                .keyword("1")
+                .page(1)
+                .size(10)
                 .build();
 
-        boardService.modify(boardDTO);
+        PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+
+        log.info(responseDTO);
     }
 }

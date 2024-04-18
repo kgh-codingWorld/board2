@@ -1,112 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
-
-    <th:block th:fragment="content">
-
-        <h1 class="mt-4">Board Modify Page</h1>
-    </th:block>
-
-    <form action="/board/modify" method="post"> <!--추가된 form 태그-->
-
-        <!--페이지 번호-->
-        <input type="hidden" name="page" th:value="${requestDTO.page}">
-        <input type="hidden" name="type" th:value="${requestDTO.type}">
-        <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
-
-        <!--글 번호-->
-        <div class="form-group">
-            <label>Bno</label>
-            <input type="text" class="form-control" name="bno" th:value="${dto.bno}" readonly> <!--수정 불가-->
-        </div>
-
-        <!--글 제목-->
-        <div class="form-group">
-            <label>Title</label>
-            <input type="text" class="form-control" name="title" th:value="${dto.title}"> <!--수정 가능-->
-        </div>
-
-        <!--글 내용-->
-        <div class="form-group">
-            <label>Content</label>
-            <textarea class="form-control" rows="5" name="content">[[${dto.content}]]</textarea><!--수정 가능-->
-        </div>
-
-        <!--글 작성자-->
-        <div class="form-group">
-            <label>Writer</label>
-            <input type="text" class="form-control" name="writer" th:value="${dto.writerEmail}" readonly> <!--수정 불가-->
-        </div>
-
-        <!--글 작성일-->
-        <div class="form-group">
-            <label>RegDate</label>
-            <input type="text" class="form-control" th:value="${#temporals.format(dto.regDate, 'yyyy/MM/dd HH:mm:ss')}" readonly> <!--수정 불가-->
-        </div>
-
-        <!--글 수정일-->
-        <div class="form-group">
-            <label>ModDate</label>
-            <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}" readonly> <!--수정 불가-->
-        </div>
-    </form>
-
-    <button type="button" class="btn btn-primary modifyBtn">Modify</button>
-
-    <button type="button" class="btn btn-info listBtn">List</button>
-
-    <button type="button" class="btn btn-danger removeBtn">Remove</button>
-
-    <script th:inline="javascript">
-
-        var actionForm = $("form"); // form 태그 객체
-
-        // 삭제 버튼 클릭
-        $(".removeBtn").click(function () {
-            actionForm.attr("action", "/board/remove").attr("method", "post");
-
-            actionForm.submit();
-        });
-
-        // 수정 버튼 클릭
-        $(".modifyBtn").click(function() {
-            if(!confirm("수정하시겠습니까?")){
-                return;
-            }
-
-            actionForm.attr("action", "/board/modify").attr("method", "post").submit();
-        });
-
-        // 목록 버튼 클릭
-        $(".listBtn").click(function (){
-
-            //var pageInfo = $("input[name='page']"); // 이름이 page인 input 타입에 들어온 값을 변수에 넣음
-            var page = $("input[name='page']");
-            var type = $("input[name='type']");
-            var keyword = $("input[name='keyword']");
-
-            actionForm.empty(); // form 태그의 모든 내용 지우고
-
-            actionForm.append(page);
-            actionForm.append(type);
-            actionForm.append(keyword);
-
-            //actionForm.append(pageInfo); // 목록 페이지 이동에 필요한 내용 다시 추가
-            actionForm.attr("action", "/board/list").attr("method", "get");
-
-            //console.log(actionForm.html()); // 먼저 확인 후 주석 처리
-            actionForm.submit(); // 확인 후 주석 해제
-        })
-    </script>
-</th:block>
-
-
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Board Read</title>
 </head>
-<body>
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Board Read
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/board/modify}" method="post" id="f1">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Bno</span>
+                        <input type="text" class="form-control" name="bno" th:value="${dto.bno}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Title</span>
+                        <input type="text" class="form-control" name="title" th:value="${dto.title}">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Content</span>
+                        <textarea class="form-control col-sm-5" rows="5" name="content">[[${dto.content}]]</textarea>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Writer</span>
+                        <input type="text" class="form-control" name="writer" th:value="${dto.writer}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">RegDate</span>
+                        <input type="text" class="form-control" th:value="${#temporals.format(dto.regDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">ModDate</span>
+                        <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                    </div>
+                    <div class="my-4">
+                        <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
+                            <a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
+                                <button type="button" class="btn btn-primary">List</button></a>
+                            <a th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
+                                <button type="button" class="btn btn-secondary">Modify</button></a>
+                            <button type="button" class="btn btn-danger removeBtn">Remove</button>
+                        </div>
+                    </div>
+                    </form>
+                </div> <!--end card body-->
+            </div> <!--end card-->
+        </div> <!--end col-->
+    </div> <!--end row-->
+</div>
 
-</body>
+<script layout:fragment="script" th:inline="javascript">
+
+    const errors = [[${errors}]]
+    console.log(errors)
+
+    let errorMsg = ''
+
+    if(errors) {
+        for (let i = 0; i<errors.length; i++) {
+            errorMsg += '${errors[i].field}은(는) ${errors[i].code} \n'
+        }
+        alert(errorMsg)
+    }
+
+    console.log("script...")
+</script>
 </html>

@@ -1,5 +1,6 @@
 package org.zerock.board.config;
 
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -21,10 +22,13 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.zerock.board.security.CustomUserDetailsService;
 import org.zerock.board.security.filter.APILoginFilter;
-import org.zerock.board.security.filter.APILoginSuccessHandler;
+import org.zerock.board.security.filter.RefreshTokenFilter;
+import org.zerock.board.security.filter.TokenCheckFilter;
+import org.zerock.board.security.handler.APILoginSuccessHandler;
 import org.zerock.board.security.handler.Custom403Handler;
 import org.zerock.board.security.handler.CustomSocialLoginSuccessHandler;
 import org.zerock.board.service.APIUserDetailsService;
+import org.zerock.board.util.JWTUtil;
 
 import javax.sql.DataSource;
 
@@ -43,6 +47,9 @@ public class CustomSecurityConfig {
     private final CustomUserDetailsService userDetailsService;
 
     private final APIUserDetailsService apiUserDetailsService;
+
+    private final JWTUtil jwtUtil;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,7 +73,7 @@ public class CustomSecurityConfig {
         APILoginFilter apiLoginFilter = new APILoginFilter("/generateToken");
         apiLoginFilter.setAuthenticationManager(authenticationManager);
 
-        APILoginSuccessHandler apiLoginSuccessHandler = new APILoginSuccessHandler();
+        APILoginSuccessHandler apiLoginSuccessHandler = new APILoginSuccessHandler(jwtUtil);
         apiLoginFilter.setAuthenticationSuccessHandler(apiLoginSuccessHandler);
 
         // APILoginFilter의 위치 조정
@@ -83,6 +90,15 @@ public class CustomSecurityConfig {
             form.loginPage("/member/login"); // 694 추가 로그인 폼 추가 .loginPage("/member/login");
             // member/login.html을 찾음.
         });  // CustomUserDetailsService 클래스로 UserDeTailsService 구현체로 생성 // 로그인 화면에서 로그인을 진행하겠다는 설정
+
+        //api로 시작하는 모든 경로는 TokenCheckFilter 동작
+        http.addFilterBefore(
+                tokenCheckFilter(jwtUtil),
+                UsernamePasswordAuthenticationFilter.class
+        );
+
+        //refreshToken 호출 처리
+        http.addFilterBefore(new RefreshTokenFilter("/refreshToken", jwtUtil), TokenCheckFilter.class);
 
         // username과 passwored 파라미터만으로 로그인 가능해짐
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable()); // 토큰 비활성화 -> 사용 시 post/put/delete를 이용하는 모든 코드를 수정해야 하는 단점
@@ -107,6 +123,10 @@ public class CustomSecurityConfig {
         });
 
         return http.build();
+    }
+
+    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil) {
+        return new TokenCheckFilter(jwtUtil);
     }
 
     @Bean

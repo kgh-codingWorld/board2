@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.board.dto.BoardDTO;
 import org.zerock.board.dto.PageRequestDTO;
+import org.zerock.board.dto.PageResponseDTO;
 import org.zerock.board.service.BoardService;
 
 import jakarta.validation.Valid;
@@ -30,77 +31,43 @@ public class BoardController {
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model){
 
-        log.info("list..." + pageRequestDTO);
+        PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
 
-        model.addAttribute("result", boardService.getList(pageRequestDTO));
+        log.info(responseDTO);
+
+        model.addAttribute("responseDTO", responseDTO);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/register")
-    public void registerGet(){
+    public void registerGET() {
 
     }
 
     @PostMapping("/register")
-    public String registerPost(BoardDTO dto, RedirectAttributes rttr) {
+    public String registerPOST(@Valid BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes rttr) {
+        if(bindingResult.hasErrors()) {
+            log.info("has errors...");
+            rttr.addFlashAttribute("errors", bindingResult.getAllErrors());
 
-        log.info("dto..." + dto);
-        // 새로 추가된 엔티티 번호
-        Long bno = boardService.register(dto);
+            return "redirect:/board/register";
+        }
 
-        log.info("BNO: " + bno);
+        log.info(boardDTO);
 
-        rttr.addFlashAttribute("msg", bno);
+        Long bno = boardService.register(boardDTO);
+
+        rttr.addFlashAttribute("result", bno);
 
         return "redirect:/board/list";
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping({"/read", "/modify" })
-    public void read(PageRequestDTO pageRequestDTO, Long bno, Model model){
-
-        log.info("bno: " + bno);
-
+    @GetMapping({"/read", "modify"})
+    public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
         BoardDTO boardDTO = boardService.readOne(bno);
 
         log.info(boardDTO);
 
         model.addAttribute("dto", boardDTO);
-
     }
 
-    @PreAuthorize("principal.username == #boardDTO.writer")
-    @PostMapping("/remove")
-    public String remove(long bno, RedirectAttributes rttr) {
-
-        log.info("bno: " + bno);
-
-        boardService.removeWithReplies(bno);
-
-        rttr.addFlashAttribute("msg", bno);
-
-        return "redirect:/board/list";
-    }
-
-    @PreAuthorize("principal.username == #boardDTO.writer") // principal.username: 현재 로그인된 사용자 아이디, #boardDTO: 현재 파라미터가 수집된 BoardDTO
-    @PostMapping("/modify")
-    public String modify(@Valid BoardDTO dto,
-                         BindingResult bindingResult,
-                         PageRequestDTO pageRequestDTO,
-                         RedirectAttributes rttr) {
-
-        log.info("post modify...");
-
-        log.info("dto: " + dto);
-
-        boardService.modify(dto);
-
-        rttr.addAttribute("page", pageRequestDTO.getPage());
-        rttr.addFlashAttribute("type", pageRequestDTO.getType());
-        rttr.addFlashAttribute("keyword", pageRequestDTO.getKeyword());
-
-        rttr.addFlashAttribute("bno", dto.getBno());
-
-        return "redirect:/board/read";
-    }
 }

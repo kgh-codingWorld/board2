@@ -22,6 +22,12 @@ import java.util.stream.IntStream;
 @Log4j2
 public class SampleController {
 
+//    @GetMapping("/hello")
+//    public void hello(Model model) {
+//        log.info("hello...");
+//        model.addAttribute("msg", "HELLO WORLD");
+//    }
+
     @ApiOperation("Sample GET doA")
     @GetMapping("/doA")
     public List<String> doA(){

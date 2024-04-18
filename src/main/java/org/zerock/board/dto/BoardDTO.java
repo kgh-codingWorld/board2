@@ -1,11 +1,12 @@
 package org.zerock.board.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
-@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,11 +16,17 @@ public class BoardDTO {
     // 컨트롤러와 서비스 사이에서 데이터를 전달하는 데 사용될 수 있음
 
     private Long bno;
+
+    @Size(min = 3, max = 100)
     private String title;
+
+    @NotEmpty
     private String content;
-    private String writerEmail; // 작성자 이메일(아이디)
-    private String writerName; // 작성자 이름
+
+    @NotEmpty
+    private String writer;
+
     private LocalDateTime regDate;
+
     private LocalDateTime modDate;
-    private int replyCount; // 해당 게시글의 댓글 수
 }

@@ -1,10 +1,9 @@
 package org.zerock.board.service;
 
-import org.springframework.data.domain.PageRequest;
 import org.zerock.board.dto.MovieDTO;
 import org.zerock.board.dto.MovieImageDTO;
 import org.zerock.board.dto.PageRequestDTO;
-import org.zerock.board.dto.PageResultDTO;
+import org.zerock.board.dto.PageResponseDTO;
 import org.zerock.board.entity.Movie;
 import org.zerock.board.entity.MovieImage;
 
@@ -17,7 +16,7 @@ public interface MovieService {
 
     Long register(MovieDTO movieDTO);
 
-    PageResultDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO); // 목록 처리
+    PageResponseDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO); // 목록 처리
 
     MovieDTO getMovie(Long mno); // 조회
 

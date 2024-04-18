@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"movie", "mmember"}) // 연관 관계 주의
+@ToString(exclude = {"movie", "member"}) // 연관 관계 주의
 
 public class Review extends BaseEntity { // Movie와 Member를 양쪽으로 참고하는 구조이므로 @ManyToOne으로 설계
 
@@ -20,7 +20,7 @@ public class Review extends BaseEntity { // Movie와 Member를 양쪽으로 참�
     private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Mmember mmember;
+    private Member member;
 
     private int grade;
 

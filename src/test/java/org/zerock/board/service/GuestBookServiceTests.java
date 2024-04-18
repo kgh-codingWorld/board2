@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zerock.board.dto.GuestBookDTO;
 import org.zerock.board.dto.PageRequestDTO;
-import org.zerock.board.dto.PageResultDTO;
+import org.zerock.board.dto.PageResponseDTO;
 import org.zerock.board.entity.GuestBook;
 
 @SpringBootTest
@@ -28,7 +28,7 @@ public class GuestBookServiceTests {
 
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(10).build();
 
-        PageResultDTO<GuestBookDTO, GuestBook> resultDTO = service.getList(pageRequestDTO);
+        PageResponseDTO<GuestBookDTO, GuestBook> resultDTO = service.getList(pageRequestDTO);
 
         System.out.println("PREV: " + resultDTO.isPrev());
         System.out.println("NEXT: " + resultDTO.isNext());

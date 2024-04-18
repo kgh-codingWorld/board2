@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.zerock.board.entity.Member;
-import org.zerock.board.entity.Mmember;
 import org.zerock.board.entity.Movie;
 import org.zerock.board.entity.Review;
 
@@ -20,11 +19,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // type: @EntityGraph를 어떤 방식으로 적용할 것인지 설정
     // FETCH: attributePaths에 명시한 속성은 EAGER로 처리, 나머지는 LAZY로 처리
     // LOAD: attributePaths에 명시한 속성은 EAGER로 처리, 나머지는 엔티티 클래스에 명시되거나 기본 방식으로 처리
-    @EntityGraph(attributePaths = {"mmember"}, type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = {"member"}, type = EntityGraph.EntityGraphType.FETCH)
     List<Review> findByMovie(Movie movie); // 특정 영화의 리뷰 찾기
 
-    // 테이블에서 특정 회원을 삭제하려면 우선 review 테이블에서 먼저 삭제하고 mmember 테이블에서 삭제해야 함
+    // 테이블에서 특정 회원을 삭제하려면 우선 review 테이블에서 먼저 삭제하고 member 테이블에서 삭제해야 함
     @Modifying
-    @Query("DELETE FROM Review mr where mr.mmember =: mmember") // 한 번에 삭제
-    void deleteByMmember(Mmember mmember);
+    @Query("DELETE FROM Review mr where mr.member =: member") // 한 번에 삭제
+    void deleteByMember(Member member);
 }

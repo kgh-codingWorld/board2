@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @ToString(exclude = "roleSet")
+@Table(name = "member")
 public class Member extends BaseEntity {
 
     @Id // pk 선언

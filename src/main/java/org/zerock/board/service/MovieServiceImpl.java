@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.zerock.board.dto.MovieDTO;
 import org.zerock.board.dto.PageRequestDTO;
-import org.zerock.board.dto.PageResultDTO;
+import org.zerock.board.dto.PageResponseDTO;
 import org.zerock.board.entity.Movie;
 import org.zerock.board.entity.MovieImage;
 import org.zerock.board.repository.MovieImageRepository;
@@ -47,7 +47,7 @@ public class MovieServiceImpl implements MovieService{
     }
 
     @Override
-    public PageResultDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO) {
+    public PageResponseDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO) {
 
         Pageable pageable = requestDTO.getPageable(Sort.by("mno").descending());
 
@@ -65,7 +65,7 @@ public class MovieServiceImpl implements MovieService{
                 (Double) arr[2],
                 (Long) arr[3])
         );
-        return new PageResultDTO<>(result, fn);
+        return new PageResponseDTO<>(result, fn);
     }
 
     @Override

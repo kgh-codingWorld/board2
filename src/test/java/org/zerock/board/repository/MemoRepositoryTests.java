@@ -26,18 +26,18 @@ public class MemoRepositoryTests {
     @Autowired
     MemberRepository memberRepository;
 
-    @Test
-    public void insertMembers(){
-
-        IntStream.rangeClosed(1,100).forEach(i -> {
-            Member member = Member.builder()
-                    .email("user" + i + "@aaa.com")
-                    .password("1111")
-                    .name("USER" + i)
-                    .build();
-            memberRepository.save(member);
-        });
-    }
+//    @Test
+//    public void insertMembers(){
+//
+//        IntStream.rangeClosed(1,100).forEach(i -> {
+//            Member member = Member.builder()
+//                    .email("user" + i + "@aaa.com")
+//                    .password("1111")
+//                    .name("USER" + i)
+//                    .build();
+//            memberRepository.save(member);
+//        });
+//    }
     @Test
     public void testClass() {
         // 객체 주입 테스트  (MemoRepository는 인터페이스 임을 기억해라)

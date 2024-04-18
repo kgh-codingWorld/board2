@@ -10,12 +10,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.zerock.board.dto.GuestBookDTO;
 import org.zerock.board.dto.PageRequestDTO;
-import org.zerock.board.dto.PageResultDTO;
+import org.zerock.board.dto.PageResponseDTO;
 import org.zerock.board.entity.GuestBook;
 import org.zerock.board.entity.QGuestBook;
 import org.zerock.board.repository.GuestBookRepository;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -49,7 +48,7 @@ public class GuestBookServiceImpl implements GuestBookService { // dto로 파라
 
     // 방명록 리스트
     @Override
-    public PageResultDTO<GuestBookDTO, GuestBook> getList(PageRequestDTO requestDTO) {
+    public PageResponseDTO<GuestBookDTO, GuestBook> getList(PageRequestDTO requestDTO) {
         // entityToDTO를 이용해 Function을 생성하고 이를 PageResultDTO로 구성함
         // PageResultDTO에는 jpa의 처리 결과인 Page<Entity>와 Function을 전달해서 엔티티 객체들을 DTO의 리스트로 변환하고 화면에 페이지 처리와 필요한 값 생성
 
@@ -62,7 +61,7 @@ public class GuestBookServiceImpl implements GuestBookService { // dto로 파라
 
         Function<GuestBook, GuestBookDTO> fn = (entity -> entityToDTO(entity));
 
-        return new PageResultDTO<>(result, fn);
+        return new PageResponseDTO<>(result, fn);
     } // entityToDTO()를 이용해서 java.util.Function 생성하고 PageResultDTO로 구성함
 
     // 방명록 조회
